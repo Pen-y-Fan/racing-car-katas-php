@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace RacingCar\TirePressureMonitoring;
+namespace RacingCar\TyrePressureMonitoring;
 
 class Sensor
 {
@@ -10,10 +10,10 @@ class Sensor
 
     public function popNextPressurePsiValue(): int
     {
-        return self::OFFSET + self::getSamplePressure();
+        return self::OFFSET + $this->getSamplePressure();
     }
 
-    private static function getSamplePressure(): int
+    private function getSamplePressure(): int
     {
         return (int) (6 * mt_rand() / mt_getrandmax() * mt_rand() / mt_getrandmax());
     }
