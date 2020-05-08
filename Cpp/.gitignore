@@ -1,8 +1,0 @@
-cmake-build-debug/
-build/
-**/test/
-*.compiled_hpp
-*.swp
-build_meson/
-subprojects/Catch2-2.5.0/
-subprojects/packagecache

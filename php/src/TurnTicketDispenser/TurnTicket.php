@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RacingCar\TurnTicketDispenser;
 
 class TurnTicket
@@ -11,7 +13,7 @@ class TurnTicket
         $this->turnNumber = $turnNumber;
     }
 
-    public function getTurnNumber()
+    public function getTurnNumber(): int
     {
         return $this->turnNumber;
     }

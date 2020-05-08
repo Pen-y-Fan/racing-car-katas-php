@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RacingCar\TelemetrySystem;
 
 use Exception;
@@ -7,18 +9,20 @@ use InvalidArgumentException;
 
 class TelemetryClient
 {
-    public const DIAGNOSTIC_MESSAGE = "AT#UD";
+    public const DIAGNOSTIC_MESSAGE = 'AT#UD';
+
     private bool $onlineStatus = false;
+
     private bool $diagnosticMessageJustSent = false;
 
     /**
-     * @param string $telemetryServerConnectionString
      * @throws Exception
      */
     public function connect(string $telemetryServerConnectionString): void
     {
-        if (empty($telemetryServerConnectionString))
+        if (empty($telemetryServerConnectionString)) {
             throw new InvalidArgumentException();
+        }
 
         // Fake the connection with 80% changes of failure
         $success = random_int(1, 10) <= 2;
@@ -32,13 +36,13 @@ class TelemetryClient
     }
 
     /**
-     * @param string $message
      * @throws Exception
      */
     public function send(string $message): void
     {
-        if (empty($message))
+        if (empty($message)) {
             throw new InvalidArgumentException();
+        }
 
         // The simulation of send() actually just remember
         // if the last message sent was a diagnostic
@@ -46,14 +50,14 @@ class TelemetryClient
         // This information will be used to simulate the
         // receive(). Indeed there is no real server
         // listening.
-        if ($message === self::DIAGNOSTIC_MESSAGE)
+        if ($message === self::DIAGNOSTIC_MESSAGE) {
             $this->diagnosticMessageJustSent = true;
-        else
+        } else {
             $this->diagnosticMessageJustSent = false;
+        }
     }
 
     /**
-     * @return string
      * @throws Exception
      */
     public function receive(): string
@@ -78,9 +82,8 @@ Remote Rtrn Count........... 00";
             $this->diagnosticMessageJustSent = false;
         } else {
             #  Simulate the reception of a response message returning a random message.
-            $message = "";
+            $message = '';
             $messageLength = random_int(0, 50) + 60;
-            $i = $messageLength;
             for ($i = $messageLength; $i >= 0; $i--) {
                 $message .= chr(random_int(0, 40) + 86);
             }
@@ -89,7 +92,7 @@ Remote Rtrn Count........... 00";
         return $message;
     }
 
-    public function getOnlineStatus()
+    public function isOnline(): bool
     {
         return $this->onlineStatus;
     }

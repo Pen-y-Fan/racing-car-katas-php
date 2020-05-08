@@ -1,19 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RacingCar\TirePressureMonitoring;
 
 class Sensor
 {
     private const OFFSET = 16;
 
-    public function popNextPressurePsiValue()
+    public function popNextPressurePsiValue(): int
     {
-        $pressureTelemetryValue = self::getSamplePressure();
-        return self::OFFSET + $pressureTelemetryValue;
+        return self::OFFSET + self::getSamplePressure();
     }
 
-    private static function getSamplePressure()
+    private static function getSamplePressure(): int
     {
-        return 6 * (mt_rand() / mt_getrandmax()) * (mt_rand() / mt_getrandmax());
+        return (int) (6 * mt_rand() / mt_getrandmax() * mt_rand() / mt_getrandmax());
     }
 }
