@@ -24,4 +24,30 @@ class TurnTicketTest extends TestCase
         $ticket = $dispenser->getTurnTicket();
         $this->assertTrue($ticket instanceof TurnTicket);
     }
+
+    public function testATicketCanBeDispensed(): void
+    {
+        $dispenser = new TicketDispenser();
+        $ticket = $dispenser->getTurnTicket();
+        $this->assertSame(1, $ticket->getTurnNumber());
+    }
+
+    public function testTheSameTicketCannotBeDispensedTwice(): void
+    {
+        $dispenser = new TicketDispenser();
+        $ticket1 = $dispenser->getTurnTicket();
+        $ticket2 = $dispenser->getTurnTicket();
+        $this->assertNotSame($ticket1, $ticket2);
+        $this->assertNotSame($ticket1->getTurnNumber(), $ticket2->getTurnNumber());
+    }
+
+    public function testMultipleDispensersCannotDispensedTheSameTicket(): void
+    {
+        $dispenser1 = new TicketDispenser();
+        $dispenser2 = new TicketDispenser();
+        $ticket1 = $dispenser1->getTurnTicket();
+        $ticket2 = $dispenser2->getTurnTicket();
+        $this->assertNotSame($ticket1, $ticket2);
+        $this->assertNotSame($ticket1->getTurnNumber(), $ticket2->getTurnNumber());
+    }
 }
