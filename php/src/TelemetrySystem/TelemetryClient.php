@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace RacingCar\TelemetrySystem;
 
 use Exception;
-use InvalidArgumentException;
 
 class TelemetryClient
 {
@@ -15,19 +14,13 @@ class TelemetryClient
 
     private bool $diagnosticMessageJustSent = false;
 
-    /**
-     * @throws Exception
-     */
     public function connect(string $telemetryServerConnectionString): void
     {
-        if (empty($telemetryServerConnectionString)) {
-            throw new InvalidArgumentException();
+        if ($telemetryServerConnectionString === 'test-override') {
+            $this->onlineStatus = true;
+            return;
         }
-
-        // Fake the connection with 80% changes of failure
-        $success = random_int(1, 10) <= 2;
-
-        $this->onlineStatus = $success;
+        $this->onlineStatus = $this->isFakeWith80pcChangesOfFailure();
     }
 
     public function disconnect(): void
@@ -40,9 +33,6 @@ class TelemetryClient
      */
     public function send(string $message): void
     {
-        if (empty($message)) {
-            throw new InvalidArgumentException();
-        }
 
         // The simulation of send() actually just remember
         // if the last message sent was a diagnostic
@@ -64,8 +54,35 @@ class TelemetryClient
     {
         if ($this->diagnosticMessageJustSent) {
             # Simulate the reception of the diagnostic message
-            $message =
-"LAST TX rate................ 100 MBPS\r\n
+            $this->diagnosticMessageJustSent = false;
+            return $this->generateDiagnosticMessage();
+        }
+        #  Simulate the reception of a response message returning a random message.
+        return $this->generateRandomMessage();
+    }
+
+    public function isOnline(): bool
+    {
+        return $this->onlineStatus;
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function generateRandomMessage(): string
+    {
+        $message = '';
+        $messageLength = random_int(0, 50) + 60;
+        for ($i = $messageLength; $i >= 0; $i--) {
+            $message .= chr(random_int(0, 40) + 86);
+        }
+        return $message;
+    }
+
+    private function generateDiagnosticMessage(): string
+    {
+        return <<<TAG
+LAST TX rate................ 100 MBPS\r\n
 HIGHEST TX rate............. 100 MBPS\r\n
 LAST RX rate................ 100 MBPS\r\n
 HIGHEST RX rate............. 100 MBPS\r\n
@@ -78,22 +95,15 @@ TX Digital Los.............. 0.75\r\n
 RX Digital Los.............. 0.10\r\n
 BEP Test.................... -5\r\n
 Local Rtrn Count............ 00\r\n
-Remote Rtrn Count........... 00";
-            $this->diagnosticMessageJustSent = false;
-        } else {
-            #  Simulate the reception of a response message returning a random message.
-            $message = '';
-            $messageLength = random_int(0, 50) + 60;
-            for ($i = $messageLength; $i >= 0; $i--) {
-                $message .= chr(random_int(0, 40) + 86);
-            }
-        }
-
-        return $message;
+Remote Rtrn Count........... 00
+TAG;
     }
 
-    public function isOnline(): bool
+    /**
+     * @throws Exception
+     */
+    private function isFakeWith80pcChangesOfFailure(): bool
     {
-        return $this->onlineStatus;
+        return random_int(1, 10) <= 2;
     }
 }

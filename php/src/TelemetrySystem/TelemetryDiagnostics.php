@@ -12,11 +12,13 @@ class TelemetryDiagnostics
 
     public string $diagnosticInfo = '';
 
-    private TelemetryClient $telemetryClient;
+    public TelemetryClient $telemetryClient;
 
-    public function __construct()
+    public function __construct(?TelemetryClient $telemetryClient = null)
     {
-        $this->telemetryClient = new TelemetryClient();
+        $telemetryClient === null
+            ? $this->telemetryClient = new TelemetryClient()
+            : $this->telemetryClient = $telemetryClient;
     }
 
     /**
