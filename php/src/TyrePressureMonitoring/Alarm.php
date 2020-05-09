@@ -31,7 +31,6 @@ class Alarm
         return $this->alarmOn;
     }
 
-
     private function isTyrePressureOutOfRange(): bool
     {
         $psiPressureValue = $this->sensor->popNextPressurePsiValue();
