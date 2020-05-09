@@ -15,7 +15,7 @@
             <directory>./tests/TextConverter</directory>
         </testsuite>
         <testsuite name="TirePressureMonitoring">
-            <directory>./tests/TirePressureMonitoring</directory>
+            <directory>./tests/TyrePressureMonitoring</directory>
         </testsuite>
         <testsuite name="TurnTicketDispenser">
             <directory>./tests/TurnTicketDispenser</directory>

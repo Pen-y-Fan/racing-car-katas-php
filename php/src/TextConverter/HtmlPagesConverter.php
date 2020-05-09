@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace RacingCar\TextConverter;
 
-use Exception;
+use RacingCar\TextConverter\Exception\FileException;
+use Throwable;
 
 /**
  * Class HtmlPages
@@ -14,37 +15,34 @@ use Exception;
  */
 class HtmlPagesConverter
 {
-    private string $filename;
+    private string $fullFileNameWithPath;
 
     private array $breaks;
 
     /**
+     * @var resource
+     */
+    private $file;
+
+    /**
      * HtmlPages constructor.
      * Reads the file and note the positions of the page breaks so we can access them quickly
-     * @throws Exception
+     * @throws Throwable
      */
     public function __construct(string $filename)
     {
-        $this->filename = $filename;
+        $this->fullFileNameWithPath = $filename;
         $this->breaks = [0];
-        $file = fopen($this->filename, 'r');
-        if ($file === false) {
-            throw new Exception('File could not be opened');
-        }
+        $this->openFileOrFail();
 
-        while (! feof($file)) {
-            $line = fgets($file);
-            if ($line === false) {
-                continue;
-            }
-            $line = rtrim($line);
+        while (! feof($this->file)) {
+            $line = $this->readLineFromFile();
             if (strpos($line, 'PAGE_BREAK') !== false) {
-//                $pageBreakPosition = ftell($f);
-                $this->breaks[] = ftell($file);
+                $this->breaks[] = ftell($this->file);
             }
         }
-        $this->breaks[] = ftell($file);
-        fclose($file);
+        $this->breaks[] = ftell($this->file);
+        fclose($this->file);
     }
 
     /**
@@ -56,24 +54,46 @@ class HtmlPagesConverter
         $pageStart = $this->breaks[$page];
         $pageEnd = $this->breaks[$page + 1];
         $html = '';
-        $file = fopen($this->filename, 'r');
-        if ($file === false) {
-            throw new Exception('File could not be opened');
-        }
-        fseek($file, $pageStart);
-        while (ftell($file) !== $pageEnd) {
-            $line = fgets($file);
-            if ($line === false) {
-                continue;
-            }
-            $line = rtrim($line);
+        $this->openFileOrFail();
+        fseek($this->file, $pageStart);
+        while (ftell($this->file) !== $pageEnd) {
+            $line = $this->readLineFromFile();
             if (strpos($line, 'PAGE_BREAK') !== false) {
                 continue;
             }
-            $html .= htmlspecialchars($line, ENT_QUOTES | ENT_HTML5);
-            $html .= '<br />';
+            $html .= $this->processLineToHtml($line);
         }
-        fclose($file);
+        fclose($this->file);
         return $html;
+    }
+
+    /**
+     * @throws FileException
+     */
+    private function openFileOrFail(): void
+    {
+        try {
+            $file = fopen($this->fullFileNameWithPath, 'r');
+        } catch (Throwable $e) {
+            throw new FileException('There was a problem opening the file.');
+        }
+        if ($file === false) {
+            throw new FileException('The file is empty');
+        }
+        $this->file = $file;
+    }
+
+    private function processLineToHtml(string $line): string
+    {
+        return htmlspecialchars($line, ENT_QUOTES | ENT_HTML5) . '<br>';
+    }
+
+    private function readLineFromFile(): String
+    {
+        $line = fgets($this->file);
+        if ($line === false) {
+            return '';
+        }
+        return rtrim($line);
     }
 }

@@ -21,6 +21,22 @@ class TyrePressureMonitoringTest extends TestCase
         $this->assertFalse($alarm->isAlarmOn());
     }
 
+    public function testAlarmCanBeTurnedOn(): void
+    {
+        $alarm = new Alarm();
+        $this->assertFalse($alarm->isAlarmOn());
+        $alarm->check();
+    }
+
+    public function testSensor(): void
+    {
+        $sensor = new Sensor();
+        $psiValue = $sensor->popNextPressurePsiValue();
+        $this->assertIsInt($psiValue);
+        $this->assertTrue($psiValue > 15, 'Error: PSI pressure generator should be between 16 and 22');
+        $this->assertTrue($psiValue < 23, 'Error: PSI pressure generator should be between 16 and 22');
+    }
+
     public function testTyrePressureMonitorCanCheckNextPsiValue(): void
     {
         $sensor = $this->createMock(Sensor::class);
