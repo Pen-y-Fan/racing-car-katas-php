@@ -1,40 +1,37 @@
 <?php
-
 declare(strict_types=1);
 
 namespace RacingCar\Leaderboard;
 
 class Race
 {
-    private static array $points = [25, 18, 15];
-
-    private string $venue;
-
-    private array $drivers;
-
-    private array $driverNames;
+    private static $points = [25, 18, 15];
+    private $name;
+    private $drivers;
+    private $driverNames;
 
     /**
-     * @param Driver[] $drivers
+     * @param string $name
+     * @param Driver[]  $drivers
      */
-    public function __construct(string $venue, array $drivers)
+    public function __construct(string $name, array $drivers)
     {
-        $this->venue = $venue;
+        $this->name = $name;
         $this->drivers = $drivers;
         $this->driverNames = [];
 
         foreach ($drivers as $driver) {
             $name = $driver->name;
             if ($driver instanceof SelfDrivingCar) {
-                $name = "Self Driving Car - {$driver->country} ({$driver->algorithmVersion})";
+                $name = "Self Driving Car - {$driver->country} ({$driver->algorithmVersion})";                
             }
-            $this->driverNames[(string) $driver] = $name;
+            $this->driverNames[(string)$driver] = $name;
         }
     }
 
-    public function getPosition(Driver $driver): int
+    public function getPosition($driver): int
     {
-        return array_search($driver, $this->drivers, true);
+        return array_search($driver, $this->drivers);
     }
 
     public function getPoints(Driver $driver): int
@@ -44,16 +41,11 @@ class Race
 
     public function getDriverName(Driver $driver): string
     {
-        return $this->driverNames[(string) $driver];
+        return $this->driverNames[(string)$driver];
     }
 
     public function getResults(): array
     {
         return $this->drivers;
-    }
-
-    public function getVenue(): string
-    {
-        return $this->venue;
     }
 }

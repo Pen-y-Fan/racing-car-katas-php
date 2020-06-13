@@ -5,20 +5,17 @@ declare(strict_types=1);
 namespace Tests\Leaderboard;
 
 use PHPUnit\Framework\TestCase;
-use RacingCar\Leaderboard\Driver;
 use RacingCar\Leaderboard\Race;
+use RacingCar\Leaderboard\Driver;
 
 class RaceTest extends TestCase
 {
-    private Driver $driver1;
+    private $driver1;
+    private $driver2;
+    private $driver3;
+    private $race1;
 
-    private Driver $driver2;
-
-    private Driver $driver3;
-
-    private Race $race1;
-
-    protected function setUp(): void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -26,18 +23,13 @@ class RaceTest extends TestCase
         $this->driver2 = new Driver('Lewis Hamilton', 'UK');
         $this->driver3 = new Driver('Sebastian Vettel', 'DE');
 
-        $this->race1 = new Race('Australian Grand Prix', [$this->driver1, $this->driver2, $this->driver3]);
+        $this->race1 = new Race("Australian Grand Prix", [$this->driver1, $this->driver2, $this->driver3]);
     }
 
-    public function testShouldCalculateDriverPoints(): void
+    public function testShouldCalculateDriverPoints()
     {
-        $this->assertSame(25, $this->race1->getPoints($this->driver1));
-        $this->assertSame(18, $this->race1->getPoints($this->driver2));
-        $this->assertSame(15, $this->race1->getPoints($this->driver3));
-    }
-
-    public function testVenueCanBeSet(): void
-    {
-        $this->assertSame('Australian Grand Prix', $this->race1->getVenue());
+        $this->assertEquals(25, $this->race1->getPoints($this->driver1));
+        $this->assertEquals(18, $this->race1->getPoints($this->driver2));
+        $this->assertEquals(15, $this->race1->getPoints($this->driver3));
     }
 }

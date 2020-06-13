@@ -1,6 +1,9 @@
 {
     "name": "emilybache/racing-car-kata",
     "description": "A kata to practice SOLID patterns",
+    "require": {
+        "php": "^7.2"
+    },
     "autoload": {
         "psr-4": {
             "RacingCar\\": "src/"
@@ -11,10 +14,8 @@
             "Tests\\": "tests/"
         }
     },
-    "require": {
-        "phpunit/phpunit": "^8.0"
-    },
     "require-dev": {
+        "phpunit/phpunit": "^8.0",
         "phpstan/phpstan": "^0.12.23",
         "phpstan/phpstan-phpunit": "^0.12.8",
         "symplify/easy-coding-standard": "^7.3",

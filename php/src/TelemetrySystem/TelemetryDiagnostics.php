@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace RacingCar\TelemetrySystem;
@@ -8,36 +7,33 @@ use Exception;
 
 class TelemetryDiagnostics
 {
-    public const DIAGNOSTIC_CHANNEL_CONNECTION_STRING = '*111#';
+    public const DIAGNOSTIC_CHANNEL_CONNECTION_STRING = "*111#";
 
-    public string $diagnosticInfo = '';
+    private $telemetryClient;
+    public $diagnosticInfo = "";
 
-    public TelemetryClient $telemetryClient;
-
-    public function __construct(?TelemetryClient $telemetryClient = null)
+    public function __construct()
     {
-        $telemetryClient === null
-            ? $this->telemetryClient = new TelemetryClient()
-            : $this->telemetryClient = $telemetryClient;
+        $this->telemetryClient = new TelemetryClient();
     }
 
     /**
      * @throws Exception
      */
-    public function checkTransmission(): void
+    public function checkTransmission()
     {
-        $this->diagnosticInfo = '';
+        $this->diagnosticInfo = "";
         $this->telemetryClient->disconnect();
 
         $retryLeft = 3;
-        while ($this->telemetryClient->isOnline() === false and $retryLeft > 0) {
-            $this->telemetryClient->connect(self::DIAGNOSTIC_CHANNEL_CONNECTION_STRING);
-            --$retryLeft;
+        while($this->telemetryClient->getOnlineStatus() === false and $retryLeft > 0)
+        {
+            $this->telemetryClient->connect(TelemetryDiagnostics::DIAGNOSTIC_CHANNEL_CONNECTION_STRING);
+            $retryLeft -= 1;
         }
 
-        if ($this->telemetryClient->isOnline() === false) {
-            throw new Exception('Unable to connect.');
-        }
+        if ($this->telemetryClient->getOnlineStatus() === false)
+            throw new Exception("Unable to connect.");
 
         $this->telemetryClient->send(TelemetryClient::DIAGNOSTIC_MESSAGE);
         $this->diagnosticInfo = $this->telemetryClient->receive();
