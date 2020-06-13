@@ -43,7 +43,10 @@ class HtmlPageConverterTest extends TestCase
         $html = $converter->getHtmlPage(1);
         $this->assertStringStartsWith('## Get going quickly with Cyber-Dojo<br>', $html);
         $html = $converter->getHtmlPage(2);
-        $this->assertStringStartsWith('## TDD with Mock Objects: Design Principles and Emerging Properties<br>', $html);
+        $this->assertStringStartsWith(
+            '## TDD with Mock Objects: Design Principles and Emerging Properties<br>',
+            $html
+        );
     }
 
     public function testInvalidFileWillThrowAnException(): void
